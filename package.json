@@ -1,12 +1,12 @@
 {
-  "name": "flex-grid-system",
+  "name": "dicto-grid-system",
   "version": "1.0.0",
   "description": "",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "dictodesigns.com",
   "license": "ISC",
   "dependencies": {
     "grunt": "^0.4.5",
