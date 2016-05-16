@@ -1,0 +1,233 @@
+/*
+*	Grid system (Build on flex)
+*	Great source: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+*/
+
+@grid-columns: 12;
+
+@grid-spacing-minimum: 10px;
+@grid-spacing-small: 10px;
+@grid-spacing-base: 20px;
+@grid-spacing-medium: 40px;
+@grid-spacing-large: 60px;
+
+@grid-breakpoint-xs: 480px;
+@grid-breakpoint-sm: 780px;
+@grid-breakpoint-md: 1100px;
+@grid-breakpoint-lg: 1400px;
+
+.row {
+	// Flex stuff
+	.display(flex);
+	.flex(1);
+	.flex-direction(row);
+	.flex-wrap(wrap);
+	.justify-content(flex-start);
+	.align-content(flex-start);
+	.align-items(flex-start);
+
+	&.flex-stretch {
+		.align-items(stretch);
+
+		& > *, & > * > * {
+			.align-self(stretch);
+		}
+	}
+
+	&.flex-column {
+		.flex-direction(columns);
+	}
+	&.flex-nowrap {
+		.flex-wrap(nowrap);
+	}
+	&.flex-center {
+		.justify-content(center);
+		.align-items(center);
+		.align-content(center);
+	}
+	&.flex-horizontal-center {
+		.justify-content(center);
+	}
+	&.flex-vertical-center {
+		//.flex-wrap(nowrap); // Edge fix
+		.align-items(center);
+		.align-content(center);
+		& > * {
+			.align-self(center);
+		}
+	}
+	&.flex-around {
+		.justify-content(space-around);
+	}
+	&.flex-between {
+		.justify-content(space-between);
+	}
+
+	width: auto;
+	overflow: hidden;
+	min-height: 1px;
+	.box-sizing(border-box);
+
+	// Fix nested rows
+	.row .row, .row .row + .row {
+		margin: 0;
+		padding: 0;
+	}
+
+	&.gutter-small {
+		.grid-gutter(@grid-spacing-small, @grid-spacing-small, @grid-spacing-minimum, @grid-spacing-minimum);
+	}
+
+	&.gutter-base {
+		.grid-gutter(@grid-spacing-base, @grid-spacing-base, @grid-spacing-small, @grid-spacing-minimum);
+	}
+
+	&.gutter-large {
+		.grid-gutter(@grid-spacing-large, @grid-spacing-medium, @grid-spacing-base, @grid-spacing-base);
+	}
+
+	&.no-horizontal-gutter {
+		& > * {
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
+
+	&.no-vertical-gutter {
+		margin-top: 0;
+		margin-bottom: 0;
+
+		& > * {
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		& + .row {
+			padding-top: 0;
+		}
+	}
+
+	& > * {
+		.display(flex);
+		float: left;
+		clear: none;
+		min-height: 1px;
+		width: 100%;
+
+		&.col-auto {
+			.flex(1 1);
+		}
+
+		& > * {
+			width: 100%;
+		}
+	}
+}
+
+/*
+*	
+*/
+.make-grid(@breakpoint-input, @name) {
+	.generate-columns(@grid-columns);
+	.generate-columns(@n, @i: 1) when (@i =< @n) {
+		@media (min-width: (@breakpoint-input + 1)) {
+			.col-@{name}-@{i} {
+				width: (100% / @n) * @i;
+			}
+		}
+		.generate-columns(@n, (@i + 1));
+	}
+}
+.make-grid(@grid-breakpoint-xs, xs);
+.make-grid(@grid-breakpoint-sm, sm);
+.make-grid(@grid-breakpoint-md, md);
+.make-grid(@grid-breakpoint-lg, lg);
+
+/* Generate regular colums */
+.generate-regular-columns(@grid-columns);
+.generate-regular-columns(@n, @i: 1) when (@i =< @n) {
+	.col-@{i} {
+		width: (100% / @n) * @i;
+	}
+	.full .col-@{i} {
+		&:first-child {
+			padding-left: 0;
+		}
+		&:last-child {
+			padding-right: 0;
+		}
+	}
+	.generate-regular-columns(@n, (@i + 1));
+}
+// Paddings
+.grid-gutter(@gutter-original, @gutter-breakpoint-large, @gutter-breakpoint-medium, @gutter-breakpoint-small) {
+	margin: -@gutter-original/2;
+
+	> * {
+		padding: @gutter-original/2;
+	}
+
+	> .row {
+		padding: 0;
+		margin: 0;
+	}
+
+	& + .row {
+		padding-top: @gutter-original/2;
+		margin-top: -@gutter-original/2;
+	}
+
+	@media (max-width: @grid-breakpoint-md) {
+		margin: -@gutter-breakpoint-large/2;
+
+		> * {
+			padding: @gutter-breakpoint-large/2;
+		}
+
+		> .row {
+			padding: 0;
+			margin: 0;
+		}
+
+		& + .row {
+			padding-top: @gutter-breakpoint-large/2;
+			margin-top: -@gutter-breakpoint-large/2;
+		}
+	}
+
+	@media (max-width: @grid-breakpoint-sm) {
+		margin: -@gutter-breakpoint-medium/2;
+
+		> * {
+			padding: @gutter-breakpoint-medium/2;
+		}
+
+		> .row {
+			padding: 0;
+			margin: 0;
+		}
+
+		& + .row {
+			padding-top: @gutter-breakpoint-medium/2;
+			margin-top: -@gutter-breakpoint-medium/2;
+		}
+	}
+
+	@media (max-width: @grid-breakpoint-xs) {
+		margin: -@gutter-breakpoint-small/2;
+
+		> * {
+			padding: @gutter-breakpoint-small/2;
+		}
+
+		> .row {
+			padding: 0;
+			margin: 0;
+		}
+
+		& + .row {
+			padding-top: @gutter-breakpoint-small/2;
+			margin-top: -@gutter-breakpoint-small/2;
+		}
+	}
+}
